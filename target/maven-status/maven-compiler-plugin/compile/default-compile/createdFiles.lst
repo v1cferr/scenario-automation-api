@@ -1,6 +1,9 @@
+com\scenario\automation\model\User.class
+com\scenario\automation\repository\UserRepository.class
 com\scenario\automation\model\Ambiente.class
 com\scenario\automation\model\Luminaria.class
 com\scenario\automation\config\SwaggerConfig.class
+com\scenario\automation\config\DataInitializer.class
 com\scenario\automation\repository\AmbienteRepository.class
 com\scenario\automation\repository\LuminariaRepository.class
 com\scenario\automation\controller\AmbienteController.class

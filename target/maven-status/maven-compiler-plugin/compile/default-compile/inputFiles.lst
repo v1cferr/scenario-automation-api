@@ -1,4 +1,5 @@
 C:\Users\sdev\v1cferr\scenario-automation-api\src\main\java\com\scenario\automation\repository\LuminariaRepository.java
+C:\Users\sdev\v1cferr\scenario-automation-api\src\main\java\com\scenario\automation\repository\UserRepository.java
 C:\Users\sdev\v1cferr\scenario-automation-api\src\main\java\com\scenario\automation\controller\AuthController.java
 C:\Users\sdev\v1cferr\scenario-automation-api\src\main\java\com\scenario\automation\model\Luminaria.java
 C:\Users\sdev\v1cferr\scenario-automation-api\src\main\java\com\scenario\automation\config\SwaggerConfig.java
@@ -6,6 +7,8 @@ C:\Users\sdev\v1cferr\scenario-automation-api\src\main\java\com\scenario\automat
 C:\Users\sdev\v1cferr\scenario-automation-api\src\main\java\com\scenario\automation\dto\JwtResponse.java
 C:\Users\sdev\v1cferr\scenario-automation-api\src\main\java\com\scenario\automation\controller\HealthController.java
 C:\Users\sdev\v1cferr\scenario-automation-api\src\main\java\com\scenario\automation\service\LuminariaService.java
+C:\Users\sdev\v1cferr\scenario-automation-api\src\main\java\com\scenario\automation\config\DataInitializer.java
+C:\Users\sdev\v1cferr\scenario-automation-api\src\main\java\com\scenario\automation\model\User.java
 C:\Users\sdev\v1cferr\scenario-automation-api\src\main\java\com\scenario\automation\repository\AmbienteRepository.java
 C:\Users\sdev\v1cferr\scenario-automation-api\src\main\java\com\scenario\automation\model\Ambiente.java
 C:\Users\sdev\v1cferr\scenario-automation-api\src\main\java\com\scenario\automation\controller\AmbienteController.java
