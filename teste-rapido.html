@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste Rápido API</title>
+</head>
+<body>
+    <h1>Teste Rápido da API</h1>
+    
+    <div>
+        <h2>1. Teste Login</h2>
+        <button onclick="testarLogin()">Testar Login</button>
+        <div id="resultadoLogin"></div>
+    </div>
+    
+    <div>
+        <h2>2. Teste API Autenticada</h2>
+        <button onclick="testarAPI()">Testar GET /environments</button>
+        <div id="resultadoAPI"></div>
+    </div>
+
+    <script>
+        let token = null;
+
+        async function testarLogin() {
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: 'admin',
+                        password: 'admin123'
+                    })
+                });
+
+                const data = await response.json();
+                document.getElementById('resultadoLogin').innerHTML = 
+                    `<h3>Resultado Login:</h3>
+                     <p>Status: ${response.status}</p>
+                     <pre>${JSON.stringify(data, null, 2)}</pre>`;
+
+                if (response.ok && data.token) {
+                    token = data.token;
+                    console.log('Token recebido:', token);
+                }
+            } catch (error) {
+                document.getElementById('resultadoLogin').innerHTML = 
+                    `<h3>Erro:</h3><p>${error.message}</p>`;
+            }
+        }
+
+        async function testarAPI() {
+            if (!token) {
+                alert('Faça login primeiro!');
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:8080/api/environments', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+                document.getElementById('resultadoAPI').innerHTML = 
+                    `<h3>Resultado API:</h3>
+                     <p>Status: ${response.status}</p>
+                     <pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                document.getElementById('resultadoAPI').innerHTML = 
+                    `<h3>Erro:</h3><p>${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
