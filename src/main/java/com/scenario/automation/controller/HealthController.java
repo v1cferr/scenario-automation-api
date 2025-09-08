@@ -1,8 +1,12 @@
 package com.scenario.automation.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +16,12 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class HealthController {
 
+    @Autowired
+    private Environment env;
+    
+    @Autowired
+    private DataSource dataSource;
+
     @GetMapping("/health")
     public ResponseEntity<?> health() {
         Map<String, Object> health = new HashMap<>();
@@ -19,6 +29,22 @@ public class HealthController {
         health.put("timestamp", LocalDateTime.now());
         health.put("service", "Scenario Automation API");
         health.put("version", "1.0.0");
+        
+        // Informações do banco de dados
+        Map<String, String> database = new HashMap<>();
+        try (Connection conn = dataSource.getConnection()) {
+            database.put("url", conn.getMetaData().getURL());
+            database.put("driver", conn.getMetaData().getDriverName());
+            database.put("product", conn.getMetaData().getDatabaseProductName());
+            database.put("version", conn.getMetaData().getDatabaseProductVersion());
+            database.put("status", "Connected");
+        } catch (Exception e) {
+            database.put("status", "Error: " + e.getMessage());
+        }
+        
+        health.put("database", database);
+        health.put("activeProfile", env.getProperty("spring.profiles.active", "default"));
+        
         return ResponseEntity.ok(health);
     }
 

@@ -26,8 +26,19 @@ public class LuminariaService {
      * Criar nova luminária
      */
     public Luminaria createLuminaria(Luminaria luminaria) {
-        // Verificar se o ambiente existe
-        Ambiente ambiente = ambienteService.getById(luminaria.getAmbiente().getId());
+        // Verificar se o ambiente existe (usando environmentId se disponível)
+        Ambiente ambiente = null;
+        
+        if (luminaria.getAmbiente() != null && luminaria.getAmbiente().getId() != null) {
+            // Se ambiente foi enviado como objeto
+            ambiente = ambienteService.getById(luminaria.getAmbiente().getId());
+        } else if (luminaria.getEnvironmentId() != null) {
+            // Se foi enviado environmentId
+            ambiente = ambienteService.getById(luminaria.getEnvironmentId());
+        } else {
+            throw new RuntimeException("É obrigatório informar o ambiente da luminária");
+        }
+        
         luminaria.setAmbiente(ambiente);
 
         // Verificar se já existe luminária com o mesmo nome no ambiente

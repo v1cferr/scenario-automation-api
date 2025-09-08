@@ -50,6 +50,10 @@ public class Luminaria {
     @JsonBackReference
     private Ambiente ambiente;
 
+    // Campo transitório para receber environmentId do frontend
+    @Transient
+    private Long environmentId;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -149,6 +153,14 @@ public class Luminaria {
 
     public void setAmbiente(Ambiente ambiente) {
         this.ambiente = ambiente;
+    }
+
+    public Long getEnvironmentId() {
+        return environmentId;
+    }
+
+    public void setEnvironmentId(Long environmentId) {
+        this.environmentId = environmentId;
     }
 
     public LocalDateTime getCreatedAt() {
