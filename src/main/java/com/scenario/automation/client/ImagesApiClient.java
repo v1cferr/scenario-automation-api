@@ -125,6 +125,31 @@ public class ImagesApiClient {
     }
 
     /**
+     * Deletar todas as imagens de um ambiente
+     */
+    public int deleteAllImagesByEnvironment(Long environmentId) {
+        try {
+            String url = imagesApiBaseUrl + "/api/images/environment/" + environmentId;
+
+            ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                url,
+                HttpMethod.DELETE,
+                null,
+                new ParameterizedTypeReference<Map<String, Object>>() {}
+            );
+
+            Map<String, Object> body = response.getBody();
+            if (body != null && body.containsKey("deletedCount")) {
+                return ((Number) body.get("deletedCount")).intValue();
+            }
+            return 0;
+        } catch (RestClientException e) {
+            // Se a API de imagens não estiver disponível, retorna 0
+            return 0;
+        }
+    }
+
+    /**
      * Atualizar nome da imagem
      */
     public EnvironmentImageDto updateImageName(Long imageId, String newImageName) {
@@ -179,7 +204,12 @@ public class ImagesApiClient {
     public boolean isImagesApiAvailable() {
         try {
             String url = imagesApiBaseUrl + "/api/images/health";
-            ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
+            ResponseEntity<Map<String, String>> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<Map<String, String>>() {}
+            );
             return response.getStatusCode() == HttpStatus.OK;
         } catch (Exception e) {
             return false;

@@ -1,5 +1,6 @@
 package com.scenario.automation.service;
 
+import com.scenario.automation.client.ImagesApiClient;
 import com.scenario.automation.model.Ambiente;
 import com.scenario.automation.repository.AmbienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ public class AmbienteService {
 
     @Autowired
     private AmbienteRepository ambienteRepository;
+
+    @Autowired
+    private ImagesApiClient imagesApiClient;
 
     /**
      * Criar novo ambiente
@@ -97,6 +101,17 @@ public class AmbienteService {
      */
     public void deleteAmbiente(Long id) {
         Ambiente ambiente = getById(id);
+        
+        // Primeiro, deletar todas as imagens associadas ao ambiente
+        try {
+            int deletedImagesCount = imagesApiClient.deleteAllImagesByEnvironment(id);
+            System.out.println("Deletadas " + deletedImagesCount + " imagens do ambiente " + id);
+        } catch (Exception e) {
+            // Log do erro mas continua com a exclusão do ambiente
+            System.err.println("Erro ao deletar imagens do ambiente " + id + ": " + e.getMessage());
+        }
+        
+        // Depois, deletar o ambiente
         ambienteRepository.delete(ambiente);
     }
 
