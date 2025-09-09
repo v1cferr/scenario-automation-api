@@ -43,7 +43,10 @@ public class LuminariaService {
                                      "' no ambiente '" + ambiente.getName() + "'");
         }
 
-        return luminariaRepository.save(luminaria);
+        Luminaria savedLuminaria = luminariaRepository.save(luminaria);
+        // Preencher o campo environmentId para o front-end
+        savedLuminaria.setEnvironmentId(ambiente.getId());
+        return savedLuminaria;
     }
 
     /**
@@ -51,7 +54,14 @@ public class LuminariaService {
      */
     @Transactional(readOnly = true)
     public List<Luminaria> getAllLuminarias() {
-        return luminariaRepository.findAll();
+        List<Luminaria> luminarias = luminariaRepository.findAll();
+        // Preencher o campo environmentId para o front-end
+        for (Luminaria luminaria : luminarias) {
+            if (luminaria.getAmbiente() != null) {
+                luminaria.setEnvironmentId(luminaria.getAmbiente().getId());
+            }
+        }
+        return luminarias;
     }
 
     /**
@@ -60,7 +70,12 @@ public class LuminariaService {
     @Transactional(readOnly = true)
     public List<Luminaria> getLuminariasByEnvironmentId(Long environmentId) {
         ambienteService.getById(environmentId); // Verificar se o ambiente existe
-        return luminariaRepository.findByAmbienteIdOrderByNameAsc(environmentId);
+        List<Luminaria> luminarias = luminariaRepository.findByAmbienteIdOrderByNameAsc(environmentId);
+        // Preencher o campo environmentId para o front-end
+        for (Luminaria luminaria : luminarias) {
+            luminaria.setEnvironmentId(environmentId);
+        }
+        return luminarias;
     }
 
     /**
@@ -88,7 +103,10 @@ public class LuminariaService {
                                      "' no ambiente '" + luminaria.getAmbiente().getName() + "'");
         }
 
-        return luminariaRepository.save(luminaria);
+        Luminaria savedLuminaria = luminariaRepository.save(luminaria);
+        // Preencher o campo environmentId para o front-end
+        savedLuminaria.setEnvironmentId(luminaria.getAmbiente().getId());
+        return savedLuminaria;
     }
 
     /**
