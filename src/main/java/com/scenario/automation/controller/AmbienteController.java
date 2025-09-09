@@ -1,6 +1,8 @@
 package com.scenario.automation.controller;
 
+import com.scenario.automation.dto.images.EnvironmentImageDto;
 import com.scenario.automation.model.Ambiente;
+import com.scenario.automation.service.AmbienteImageService;
 import com.scenario.automation.service.AmbienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -9,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 import java.util.HashMap;
@@ -23,6 +26,9 @@ public class AmbienteController {
 
     @Autowired
     private AmbienteService ambienteService;
+
+    @Autowired
+    private AmbienteImageService ambienteImageService;
 
     /**
      * Criar novo ambiente
@@ -157,23 +163,19 @@ public class AmbienteController {
     }
 
     /**
-     * Atualizar apenas a imagem do ambiente
+     * Upload de imagem para um ambiente
      */
-    @PatchMapping("/{id}/image")
-    public ResponseEntity<?> updateAmbienteImage(@PathVariable Long id, @RequestBody Map<String, String> request) {
+    @PostMapping("/{id}/images/upload")
+    public ResponseEntity<?> uploadEnvironmentImage(
+            @PathVariable Long id,
+            @RequestParam("imageName") String imageName,
+            @RequestParam("file") MultipartFile file) {
         try {
-            String imageUrl = request.get("imageUrl");
-            if (imageUrl == null) {
-                Map<String, String> error = new HashMap<>();
-                error.put("error", "URL da imagem é obrigatória");
-                return ResponseEntity.badRequest().body(error);
-            }
-
-            Ambiente ambienteAtualizado = ambienteService.updateImageUrl(id, imageUrl);
-            return ResponseEntity.ok(ambienteAtualizado);
+            EnvironmentImageDto savedImage = ambienteImageService.uploadImageForEnvironment(id, imageName, file);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedImage);
         } catch (RuntimeException e) {
             Map<String, String> error = new HashMap<>();
-            error.put("error", "Erro ao atualizar imagem do ambiente");
+            error.put("error", "Erro ao fazer upload da imagem");
             error.put("message", e.getMessage());
             return ResponseEntity.badRequest().body(error);
         } catch (Exception e) {
@@ -181,6 +183,78 @@ public class AmbienteController {
             error.put("error", "Erro interno do servidor");
             error.put("message", e.getMessage());
             return ResponseEntity.internalServerError().body(error);
+        }
+    }
+
+    /**
+     * Listar todas as imagens de um ambiente
+     */
+    @GetMapping("/{id}/images")
+    public ResponseEntity<List<EnvironmentImageDto>> getEnvironmentImages(@PathVariable Long id) {
+        try {
+            List<EnvironmentImageDto> images = ambienteImageService.getImagesByEnvironment(id);
+            return ResponseEntity.ok(images);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /**
+     * Buscar imagem principal do ambiente
+     */
+    @GetMapping("/{id}/images/primary")
+    public ResponseEntity<?> getPrimaryEnvironmentImage(@PathVariable Long id) {
+        try {
+            EnvironmentImageDto primaryImage = ambienteImageService.getPrimaryImageForEnvironment(id);
+            if (primaryImage != null) {
+                return ResponseEntity.ok(primaryImage);
+            } else {
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Nenhuma imagem encontrada para este ambiente");
+                return ResponseEntity.ok(response);
+            }
+        } catch (RuntimeException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Erro ao buscar imagem principal");
+            error.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    /**
+     * Buscar imagem por nome
+     */
+    @GetMapping("/{id}/images/name/{imageName}")
+    public ResponseEntity<?> getImageByName(@PathVariable Long id, @PathVariable String imageName) {
+        try {
+            EnvironmentImageDto image = ambienteImageService.getImageByNameAndEnvironment(id, imageName);
+            if (image != null) {
+                return ResponseEntity.ok(image);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (RuntimeException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Erro ao buscar imagem");
+            error.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    /**
+     * Contar imagens de um ambiente
+     */
+    @GetMapping("/{id}/images/count")
+    public ResponseEntity<Map<String, Long>> countEnvironmentImages(@PathVariable Long id) {
+        try {
+            long count = ambienteImageService.countImagesByEnvironment(id);
+            Map<String, Long> response = new HashMap<>();
+            response.put("count", count);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Long> response = new HashMap<>();
+            response.put("count", 0L);
+            return ResponseEntity.ok(response);
         }
     }
 

@@ -88,7 +88,6 @@ public class AmbienteService {
         // Atualizar campos
         ambienteExistente.setName(ambienteAtualizado.getName());
         ambienteExistente.setDescription(ambienteAtualizado.getDescription());
-        ambienteExistente.setImageUrl(ambienteAtualizado.getImageUrl());
 
         return ambienteRepository.save(ambienteExistente);
     }
@@ -123,14 +122,5 @@ public class AmbienteService {
     @Transactional(readOnly = true)
     public List<Ambiente> findAllWithLuminarias() {
         return ambienteRepository.findAllWithLuminarias();
-    }
-
-    /**
-     * Atualizar apenas a imagem do ambiente
-     */
-    public Ambiente updateImageUrl(Long id, String imageUrl) {
-        Ambiente ambiente = getById(id);
-        ambiente.setImageUrl(imageUrl);
-        return ambienteRepository.save(ambiente);
     }
 }

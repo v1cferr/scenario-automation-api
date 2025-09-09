@@ -16,6 +16,7 @@ public class Luminaria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Name
     @NotBlank(message = "Nome é obrigatório")
     @Size(min = 2, max = 100, message = "Nome deve ter entre 2 e 100 caracteres")
     @Column(nullable = false, length = 100)
@@ -45,6 +46,7 @@ public class Luminaria {
     @Column(name = "position_y")
     private Double positionY = 0.0;
 
+    // ID
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "environment_id", nullable = false)
     @JsonBackReference

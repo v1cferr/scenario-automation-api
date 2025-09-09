@@ -160,47 +160,50 @@ public class LuminariaController {
         }
     }
 
+    // ---------------------------------- DEL -----------------------------
+
     /**
      * Ligar luminária
      */
-    @PatchMapping("/{id}/turn-on")
-    public ResponseEntity<?> turnOnLuminaria(@PathVariable Long id) {
-        try {
-            Luminaria luminaria = luminariaService.turnOnLuminaria(id);
-            return ResponseEntity.ok(luminaria);
-        } catch (RuntimeException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", "Erro ao ligar luminária");
-            error.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(error);
-        } catch (Exception e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", "Erro interno do servidor");
-            error.put("message", e.getMessage());
-            return ResponseEntity.internalServerError().body(error);
-        }
-    }
+    // Retirar o boolean
+    // @PatchMapping("/{id}/turn-on")
+    // public ResponseEntity<?> turnOnLuminaria(@PathVariable Long id) {
+    //     try {
+    //         Luminaria luminaria = luminariaService.turnOnLuminaria(id);
+    //         return ResponseEntity.ok(luminaria);
+    //     } catch (RuntimeException e) {
+    //         Map<String, String> error = new HashMap<>();
+    //         error.put("error", "Erro ao ligar luminária");
+    //         error.put("message", e.getMessage());
+    //         return ResponseEntity.badRequest().body(error);
+    //     } catch (Exception e) {
+    //         Map<String, String> error = new HashMap<>();
+    //         error.put("error", "Erro interno do servidor");
+    //         error.put("message", e.getMessage());
+    //         return ResponseEntity.internalServerError().body(error);
+    //     }
+    // }
 
     /**
      * Desligar luminária
      */
-    @PatchMapping("/{id}/turn-off")
-    public ResponseEntity<?> turnOffLuminaria(@PathVariable Long id) {
-        try {
-            Luminaria luminaria = luminariaService.turnOffLuminaria(id);
-            return ResponseEntity.ok(luminaria);
-        } catch (RuntimeException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", "Erro ao desligar luminária");
-            error.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(error);
-        } catch (Exception e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", "Erro interno do servidor");
-            error.put("message", e.getMessage());
-            return ResponseEntity.internalServerError().body(error);
-        }
-    }
+    // @PatchMapping("/{id}/turn-off")
+    // public ResponseEntity<?> turnOffLuminaria(@PathVariable Long id) {
+    //     try {
+    //         Luminaria luminaria = luminariaService.turnOffLuminaria(id);
+    //         return ResponseEntity.ok(luminaria);
+    //     } catch (RuntimeException e) {
+    //         Map<String, String> error = new HashMap<>();
+    //         error.put("error", "Erro ao desligar luminária");
+    //         error.put("message", e.getMessage());
+    //         return ResponseEntity.badRequest().body(error);
+    //     } catch (Exception e) {
+    //         Map<String, String> error = new HashMap<>();
+    //         error.put("error", "Erro interno do servidor");
+    //         error.put("message", e.getMessage());
+    //         return ResponseEntity.internalServerError().body(error);
+    //     }
+    // }
 
     /**
      * Alterar brilho da luminária

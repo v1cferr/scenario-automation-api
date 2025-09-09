@@ -28,9 +28,6 @@ public class Ambiente {
     @Column(length = 500)
     private String description;
 
-    @Column(name = "image_url")
-    private String imageUrl;
-
     @OneToMany(mappedBy = "ambiente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Luminaria> luminarias = new ArrayList<>();
@@ -46,10 +43,9 @@ public class Ambiente {
     // Construtores
     public Ambiente() {}
 
-    public Ambiente(String name, String description, String imageUrl) {
+    public Ambiente(String name, String description) {
         this.name = name;
         this.description = description;
-        this.imageUrl = imageUrl;
     }
 
     // Getters e Setters
@@ -75,14 +71,6 @@ public class Ambiente {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
     }
 
     public List<Luminaria> getLuminarias() {
@@ -126,7 +114,6 @@ public class Ambiente {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", imageUrl='" + imageUrl + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';
