@@ -1,6 +1,8 @@
 package com.scenario.automation.client;
 
 import com.scenario.automation.dto.images.EnvironmentImageDto;
+import com.scenario.automation.security.JwtTokenProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -24,11 +26,25 @@ public class ImagesApiClient {
 
     private final RestTemplate restTemplate;
     
+    @Autowired
+    private JwtTokenProvider tokenProvider;
+    
     @Value("${app.images-api.base-url:http://localhost:8081}")
     private String imagesApiBaseUrl;
 
     public ImagesApiClient() {
         this.restTemplate = new RestTemplate();
+    }
+
+    /**
+     * Criar headers com autenticação para comunicação entre APIs
+     */
+    private HttpHeaders createAuthenticatedHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        // Gerar token para comunicação entre APIs (usando usuário de sistema)
+        String token = tokenProvider.generateToken("system");
+        headers.setBearerAuth(token);
+        return headers;
     }
 
     /**
@@ -130,11 +146,14 @@ public class ImagesApiClient {
     public int deleteAllImagesByEnvironment(Long environmentId) {
         try {
             String url = imagesApiBaseUrl + "/api/images/environment/" + environmentId;
+            
+            HttpHeaders headers = createAuthenticatedHeaders();
+            HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 
             ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                 url,
                 HttpMethod.DELETE,
-                null,
+                requestEntity,
                 new ParameterizedTypeReference<Map<String, Object>>() {}
             );
 
@@ -144,6 +163,8 @@ public class ImagesApiClient {
             }
             return 0;
         } catch (RestClientException e) {
+            // Log do erro para debug
+            System.err.println("Erro ao deletar imagens do ambiente " + environmentId + ": " + e.getMessage());
             // Se a API de imagens não estiver disponível, retorna 0
             return 0;
         }
