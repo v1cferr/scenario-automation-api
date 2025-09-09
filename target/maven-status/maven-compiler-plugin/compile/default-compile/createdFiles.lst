@@ -6,8 +6,10 @@ com\scenario\automation\repository\AmbienteRepository.class
 com\scenario\automation\controller\LuminariaController.class
 com\scenario\automation\controller\HealthController.class
 com\scenario\automation\dto\JwtResponse.class
+com\scenario\automation\client\ImagesApiClient$4.class
 com\scenario\automation\dto\images\EnvironmentImageDto.class
 com\scenario\automation\client\ImagesApiClient$1.class
+com\scenario\automation\client\ImagesApiClient$3.class
 com\scenario\automation\client\ImagesApiClient.class
 com\scenario\automation\dto\LoginRequest.class
 com\scenario\automation\model\User.class
