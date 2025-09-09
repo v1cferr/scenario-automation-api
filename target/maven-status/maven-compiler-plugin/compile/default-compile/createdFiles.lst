@@ -6,11 +6,15 @@ com\scenario\automation\repository\AmbienteRepository.class
 com\scenario\automation\controller\LuminariaController.class
 com\scenario\automation\controller\HealthController.class
 com\scenario\automation\dto\JwtResponse.class
+com\scenario\automation\dto\images\EnvironmentImageDto.class
+com\scenario\automation\client\ImagesApiClient$1.class
+com\scenario\automation\client\ImagesApiClient.class
 com\scenario\automation\dto\LoginRequest.class
 com\scenario\automation\model\User.class
 com\scenario\automation\config\DataInitializer.class
 com\scenario\automation\repository\LuminariaRepository.class
 com\scenario\automation\controller\AmbienteController.class
+com\scenario\automation\client\ImagesApiClient$2.class
 com\scenario\automation\config\SecurityConfig.class
 com\scenario\automation\controller\AuthController.class
 com\scenario\automation\ScenarioAutomationApiApplication.class
@@ -18,3 +22,4 @@ com\scenario\automation\security\JwtTokenProvider.class
 com\scenario\automation\service\LuminariaService.class
 com\scenario\automation\service\AmbienteService.class
 com\scenario\automation\security\JwtAuthenticationFilter.class
+com\scenario\automation\service\AmbienteImageService.class
