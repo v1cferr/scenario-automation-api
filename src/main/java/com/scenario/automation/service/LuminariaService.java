@@ -4,8 +4,6 @@ import com.scenario.automation.model.Luminaria;
 import com.scenario.automation.model.Ambiente;
 import com.scenario.automation.repository.LuminariaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,14 +24,12 @@ public class LuminariaService {
      * Criar nova luminária
      */
     public Luminaria createLuminaria(Luminaria luminaria) {
-        // Verificar se o ambiente existe (usando environmentId se disponível)
+        // Verificar se o ambiente existe
         Ambiente ambiente = null;
         
         if (luminaria.getAmbiente() != null && luminaria.getAmbiente().getId() != null) {
-            // Se ambiente foi enviado como objeto
             ambiente = ambienteService.getById(luminaria.getAmbiente().getId());
         } else if (luminaria.getEnvironmentId() != null) {
-            // Se foi enviado environmentId
             ambiente = ambienteService.getById(luminaria.getEnvironmentId());
         } else {
             throw new RuntimeException("É obrigatório informar o ambiente da luminária");
@@ -51,181 +47,57 @@ public class LuminariaService {
     }
 
     /**
-     * Buscar luminária por ID
-     */
-    @Transactional(readOnly = true)
-    public Optional<Luminaria> findById(Long id) {
-        return luminariaRepository.findById(id);
-    }
-
-    /**
-     * Buscar luminária por ID (com exceção se não encontrar)
-     */
-    @Transactional(readOnly = true)
-    public Luminaria getById(Long id) {
-        return luminariaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Luminária não encontrada com ID: " + id));
-    }
-
-    /**
      * Listar todas as luminárias
      */
     @Transactional(readOnly = true)
-    public List<Luminaria> findAll() {
+    public List<Luminaria> getAllLuminarias() {
         return luminariaRepository.findAll();
-    }
-
-    /**
-     * Listar luminárias com paginação
-     */
-    @Transactional(readOnly = true)
-    public Page<Luminaria> findAll(Pageable pageable) {
-        return luminariaRepository.findAll(pageable);
     }
 
     /**
      * Buscar luminárias por ambiente
      */
     @Transactional(readOnly = true)
-    public List<Luminaria> findByAmbienteId(Long ambienteId) {
-        // Verificar se o ambiente existe
-        ambienteService.getById(ambienteId);
-        return luminariaRepository.findByAmbienteIdOrderByNameAsc(ambienteId);
+    public List<Luminaria> getLuminariasByEnvironmentId(Long environmentId) {
+        ambienteService.getById(environmentId); // Verificar se o ambiente existe
+        return luminariaRepository.findByAmbienteIdOrderByNameAsc(environmentId);
     }
 
     /**
-     * Buscar luminárias por tipo
+     * Buscar luminária por ID
      */
     @Transactional(readOnly = true)
-    public List<Luminaria> findByType(String type) {
-        return luminariaRepository.findByTypeIgnoreCase(type);
-    }
-
-    /**
-     * Buscar luminárias ligadas
-     */
-    @Transactional(readOnly = true)
-    public List<Luminaria> findActiveLuminarias() {
-        return luminariaRepository.findByStatusTrue();
-    }
-
-    /**
-     * Buscar luminárias ligadas por ambiente
-     */
-    @Transactional(readOnly = true)
-    public List<Luminaria> findActiveLuminariasByAmbiente(Long ambienteId) {
-        ambienteService.getById(ambienteId);
-        return luminariaRepository.findByAmbienteIdAndStatusTrue(ambienteId);
+    public Optional<Luminaria> getLuminariaById(Long id) {
+        return luminariaRepository.findById(id);
     }
 
     /**
      * Atualizar luminária
      */
     public Luminaria updateLuminaria(Long id, Luminaria luminariaAtualizada) {
-        Luminaria luminariaExistente = getById(id);
+        Luminaria luminaria = luminariaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Luminária não encontrada com ID: " + id));
 
-        // Verificar se o novo nome já existe no ambiente (excluindo a própria luminária)
-        if (!luminariaExistente.getName().equalsIgnoreCase(luminariaAtualizada.getName()) &&
-            luminariaRepository.existsByNameIgnoreCaseAndAmbienteIdAndIdNot(
-                luminariaAtualizada.getName(), 
-                luminariaExistente.getAmbiente().getId(), 
-                id)) {
+        // Atualizar apenas o nome
+        luminaria.setName(luminariaAtualizada.getName());
+
+        // Verificar se o nome não conflita com outra luminária no mesmo ambiente
+        if (luminariaRepository.existsByNameIgnoreCaseAndAmbienteIdAndIdNot(
+                luminariaAtualizada.getName(), luminaria.getAmbiente().getId(), id)) {
             throw new RuntimeException("Já existe uma luminária com o nome '" + luminariaAtualizada.getName() + 
-                                     "' no ambiente '" + luminariaExistente.getAmbiente().getName() + "'");
+                                     "' no ambiente '" + luminaria.getAmbiente().getName() + "'");
         }
 
-        // Atualizar campos
-        luminariaExistente.setName(luminariaAtualizada.getName());
-        luminariaExistente.setType(luminariaAtualizada.getType());
-        luminariaExistente.setStatus(luminariaAtualizada.getStatus());
-        luminariaExistente.setBrightness(luminariaAtualizada.getBrightness());
-        luminariaExistente.setColor(luminariaAtualizada.getColor());
-        luminariaExistente.setPositionX(luminariaAtualizada.getPositionX());
-        luminariaExistente.setPositionY(luminariaAtualizada.getPositionY());
-
-        return luminariaRepository.save(luminariaExistente);
+        return luminariaRepository.save(luminaria);
     }
 
     /**
      * Deletar luminária
      */
     public void deleteLuminaria(Long id) {
-        Luminaria luminaria = getById(id);
-        luminariaRepository.delete(luminaria);
-    }
-
-    /**
-     * Ligar luminária
-     */
-    public Luminaria turnOnLuminaria(Long id) {
-        Luminaria luminaria = getById(id);
-        luminaria.turnOn();
-        return luminariaRepository.save(luminaria);
-    }
-
-    /**
-     * Desligar luminária
-     */
-    public Luminaria turnOffLuminaria(Long id) {
-        Luminaria luminaria = getById(id);
-        luminaria.turnOff();
-        return luminariaRepository.save(luminaria);
-    }
-
-    /**
-     * Alterar brilho da luminária
-     */
-    public Luminaria changeBrightness(Long id, Integer brightness) {
-        if (brightness < 0 || brightness > 100) {
-            throw new RuntimeException("Brilho deve estar entre 0 e 100");
+        if (!luminariaRepository.existsById(id)) {
+            throw new RuntimeException("Luminária não encontrada com ID: " + id);
         }
-        
-        Luminaria luminaria = getById(id);
-        luminaria.setBrightness(brightness);
-        return luminariaRepository.save(luminaria);
-    }
-
-    /**
-     * Alterar cor da luminária
-     */
-    public Luminaria changeColor(Long id, String color) {
-        Luminaria luminaria = getById(id);
-        luminaria.setColor(color);
-        return luminariaRepository.save(luminaria);
-    }
-
-    /**
-     * Contar luminárias por ambiente
-     */
-    @Transactional(readOnly = true)
-    public long countByAmbiente(Long ambienteId) {
-        return luminariaRepository.countByAmbienteId(ambienteId);
-    }
-
-    /**
-     * Contar luminárias ligadas por ambiente
-     */
-    @Transactional(readOnly = true)
-    public long countActiveLuminariasByAmbiente(Long ambienteId) {
-        return luminariaRepository.countByAmbienteIdAndStatusTrue(ambienteId);
-    }
-
-    /**
-     * Buscar luminárias por termo de pesquisa
-     */
-    @Transactional(readOnly = true)
-    public List<Luminaria> searchLuminarias(String searchTerm) {
-        if (searchTerm == null || searchTerm.trim().isEmpty()) {
-            return findAll();
-        }
-        return luminariaRepository.findByNameContainingIgnoreCase(searchTerm.trim());
-    }
-
-    /**
-     * Verificar se luminária existe
-     */
-    @Transactional(readOnly = true)
-    public boolean existsById(Long id) {
-        return luminariaRepository.existsById(id);
+        luminariaRepository.deleteById(id);
     }
 }
