@@ -18,6 +18,7 @@ C:\Users\sdev\v1cferr\scenario-automation-api\src\main\java\com\scenario\automat
 C:\Users\sdev\v1cferr\scenario-automation-api\src\main\java\com\scenario\automation\service\AmbienteService.java
 C:\Users\sdev\v1cferr\scenario-automation-api\src\main\java\com\scenario\automation\config\SecurityConfig.java
 C:\Users\sdev\v1cferr\scenario-automation-api\src\main\java\com\scenario\automation\ScenarioAutomationApiApplication.java
+C:\Users\sdev\v1cferr\scenario-automation-api\src\main\java\com\scenario\automation\service\ImageDownloadService.java
 C:\Users\sdev\v1cferr\scenario-automation-api\src\main\java\com\scenario\automation\client\ImagesApiClient.java
 C:\Users\sdev\v1cferr\scenario-automation-api\src\main\java\com\scenario\automation\security\JwtTokenProvider.java
 C:\Users\sdev\v1cferr\scenario-automation-api\src\main\java\com\scenario\automation\service\AmbienteImageService.java

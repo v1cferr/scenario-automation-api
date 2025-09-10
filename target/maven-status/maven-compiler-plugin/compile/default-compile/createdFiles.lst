@@ -1,4 +1,5 @@
 com\scenario\automation\repository\UserRepository.class
+com\scenario\automation\service\ImageDownloadService.class
 com\scenario\automation\model\Ambiente.class
 com\scenario\automation\model\Luminaria.class
 com\scenario\automation\config\SwaggerConfig.class
