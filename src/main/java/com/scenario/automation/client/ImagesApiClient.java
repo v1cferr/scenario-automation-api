@@ -83,9 +83,10 @@ public class ImagesApiClient {
      */
     public List<EnvironmentImageDto> getImagesByEnvironment(Long environmentId) {
         try {
-            String url = imagesApiBaseUrl + "/api/images/environment/" + environmentId;
+            String url = imagesApiBaseUrl + "/api/images/internal/environment/" + environmentId;
 
-            HttpHeaders headers = createAuthenticatedHeaders();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-Internal-API-Key", "ScenarioInternalAPIKey2024ForImagesCommunication");
             HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 
             ResponseEntity<List<EnvironmentImageDto>> response = restTemplate.exchange(
