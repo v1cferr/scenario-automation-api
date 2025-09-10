@@ -5,6 +5,7 @@ import com.scenario.automation.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -54,7 +55,7 @@ public class ImagesApiClient {
         try {
             String url = imagesApiBaseUrl + "/api/images/upload";
 
-            HttpHeaders headers = new HttpHeaders();
+            HttpHeaders headers = createAuthenticatedHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
@@ -84,16 +85,20 @@ public class ImagesApiClient {
         try {
             String url = imagesApiBaseUrl + "/api/images/environment/" + environmentId;
 
+            HttpHeaders headers = createAuthenticatedHeaders();
+            HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+
             ResponseEntity<List<EnvironmentImageDto>> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
-                null,
+                requestEntity,
                 new ParameterizedTypeReference<List<EnvironmentImageDto>>() {}
             );
 
             return response.getBody() != null ? response.getBody() : Collections.emptyList();
         } catch (RestClientException e) {
             // Se a API de imagens não estiver disponível, retorna lista vazia
+            System.err.println("Erro ao buscar imagens do ambiente " + environmentId + ": " + e.getMessage());
             return Collections.emptyList();
         }
     }
@@ -242,5 +247,75 @@ public class ImagesApiClient {
      */
     public String getImageUrl(String fileName) {
         return imagesApiBaseUrl + "/api/images/file/" + fileName;
+    }
+
+    /**
+     * Buscar imagem como Resource para fazer proxy
+     */
+    public ResponseEntity<Resource> getImageAsResource(String fileName) {
+        try {
+            String url = imagesApiBaseUrl + "/api/images/file/" + fileName;
+            
+            HttpHeaders headers = createAuthenticatedHeaders();
+            HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+
+            return restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                requestEntity,
+                Resource.class
+            );
+        } catch (RestClientException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Gerar URL temporária para uma imagem específica
+     */
+    public ResponseEntity<Map<String, Object>> generateTemporaryImageUrl(Long environmentId, String fileName) {
+        try {
+            String url = imagesApiBaseUrl + "/api/images/generate-temp-url";
+            
+            HttpHeaders headers = createAuthenticatedHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            
+            Map<String, Object> request = new HashMap<>();
+            request.put("environmentId", environmentId);
+            request.put("fileName", fileName);
+            request.put("expirationMinutes", 10);
+            
+            HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(request, headers);
+
+            return restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                requestEntity,
+                new ParameterizedTypeReference<Map<String, Object>>() {}
+            );
+        } catch (RestClientException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Buscar imagem de ambiente como Resource para fazer proxy
+     */
+    public ResponseEntity<Resource> getEnvironmentImageAsResource(Long environmentId) {
+        try {
+            String url = imagesApiBaseUrl + "/api/images/environment/" + environmentId + "/download";
+            
+            HttpHeaders headers = createAuthenticatedHeaders();
+            HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+
+            return restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                requestEntity,
+                Resource.class
+            );
+        } catch (RestClientException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
