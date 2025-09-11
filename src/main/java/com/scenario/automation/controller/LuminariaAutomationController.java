@@ -20,6 +20,11 @@ public class LuminariaAutomationController {
 
     /**
      * Endpoint SSE para receber atualizações em tempo real do estado das luminárias
+     * Suporta autenticação via query parameter: ?token=<jwt>
+     * 
+     * Eventos enviados:
+     * - initial_state: Estado inicial de todas as luminárias
+     * - state_change: Mudança de estado de uma luminária específica
      */
     @GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamLuminariaEvents() {
