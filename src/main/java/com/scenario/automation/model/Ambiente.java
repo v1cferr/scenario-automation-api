@@ -28,6 +28,10 @@ public class Ambiente {
     @Column(length = 500)
     private String description;
 
+    @Size(max = 100, message = "Subambiente deve ter no máximo 100 caracteres")
+    @Column(name = "subambiente", length = 100)
+    private String subambiente;
+
     @OneToMany(mappedBy = "ambiente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Luminaria> luminarias = new ArrayList<>();
@@ -46,6 +50,12 @@ public class Ambiente {
     public Ambiente(String name, String description) {
         this.name = name;
         this.description = description;
+    }
+
+    public Ambiente(String name, String description, String subambiente) {
+        this.name = name;
+        this.description = description;
+        this.subambiente = subambiente;
     }
 
     // Getters e Setters
@@ -71,6 +81,14 @@ public class Ambiente {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getSubambiente() {
+        return subambiente;
+    }
+
+    public void setSubambiente(String subambiente) {
+        this.subambiente = subambiente;
     }
 
     public List<Luminaria> getLuminarias() {
@@ -114,6 +132,7 @@ public class Ambiente {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", subambiente='" + subambiente + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

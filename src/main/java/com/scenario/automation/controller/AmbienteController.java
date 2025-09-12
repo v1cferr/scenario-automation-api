@@ -681,4 +681,138 @@ public class AmbienteController {
         response.put("timestamp", System.currentTimeMillis());
         return ResponseEntity.ok(response);
     }
+
+    // =================== ENDPOINTS PARA SUBAMBIENTES ===================
+
+    /**
+     * Criar subambiente para um ambiente específico
+     */
+    @PostMapping("/{ambienteId}/subambientes")
+    public ResponseEntity<?> createSubambiente(
+            @PathVariable Long ambienteId, 
+            @RequestBody Map<String, String> requestBody) {
+        try {
+            String subambiente = requestBody.get("subambiente");
+            if (subambiente == null || subambiente.trim().isEmpty()) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "Subambiente é obrigatório");
+                return ResponseEntity.badRequest().body(error);
+            }
+
+            Optional<Ambiente> ambienteOpt = ambienteService.findById(ambienteId);
+            if (ambienteOpt.isEmpty()) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "Ambiente não encontrado");
+                return ResponseEntity.notFound().build();
+            }
+
+            Ambiente ambiente = ambienteOpt.get();
+            ambiente.setSubambiente(subambiente);
+            Ambiente ambienteAtualizado = ambienteService.updateAmbiente(ambienteId, ambiente);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Subambiente criado com sucesso");
+            response.put("ambiente", ambienteAtualizado);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Erro interno do servidor");
+            error.put("message", e.getMessage());
+            return ResponseEntity.internalServerError().body(error);
+        }
+    }
+
+    /**
+     * Listar ambientes por subambiente
+     */
+    @GetMapping("/subambientes/{subambiente}")
+    public ResponseEntity<?> getAmbientesBySubambiente(@PathVariable String subambiente) {
+        try {
+            List<Ambiente> ambientes = ambienteService.findBySubambiente(subambiente);
+            return ResponseEntity.ok(ambientes);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Erro interno do servidor");
+            error.put("message", e.getMessage());
+            return ResponseEntity.internalServerError().body(error);
+        }
+    }
+
+    /**
+     * Listar todos os subambientes únicos
+     */
+    @GetMapping("/subambientes")
+    public ResponseEntity<?> getAllSubambientes() {
+        try {
+            List<String> subambientes = ambienteService.findAllDistinctSubambientes();
+            return ResponseEntity.ok(subambientes);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Erro interno do servidor");
+            error.put("message", e.getMessage());
+            return ResponseEntity.internalServerError().body(error);
+        }
+    }
+
+    /**
+     * Atualizar subambiente de um ambiente específico
+     */
+    @PutMapping("/{ambienteId}/subambientes")
+    public ResponseEntity<?> updateSubambiente(
+            @PathVariable Long ambienteId, 
+            @RequestBody Map<String, String> requestBody) {
+        try {
+            String novoSubambiente = requestBody.get("subambiente");
+            
+            Optional<Ambiente> ambienteOpt = ambienteService.findById(ambienteId);
+            if (ambienteOpt.isEmpty()) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "Ambiente não encontrado");
+                return ResponseEntity.notFound().build();
+            }
+
+            Ambiente ambiente = ambienteOpt.get();
+            ambiente.setSubambiente(novoSubambiente); // Pode ser null para remover
+            Ambiente ambienteAtualizado = ambienteService.updateAmbiente(ambienteId, ambiente);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Subambiente atualizado com sucesso");
+            response.put("ambiente", ambienteAtualizado);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Erro interno do servidor");
+            error.put("message", e.getMessage());
+            return ResponseEntity.internalServerError().body(error);
+        }
+    }
+
+    /**
+     * Remover subambiente de um ambiente específico
+     */
+    @DeleteMapping("/{ambienteId}/subambientes")
+    public ResponseEntity<?> removeSubambiente(@PathVariable Long ambienteId) {
+        try {
+            Optional<Ambiente> ambienteOpt = ambienteService.findById(ambienteId);
+            if (ambienteOpt.isEmpty()) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "Ambiente não encontrado");
+                return ResponseEntity.notFound().build();
+            }
+
+            Ambiente ambiente = ambienteOpt.get();
+            ambiente.setSubambiente(null);
+            Ambiente ambienteAtualizado = ambienteService.updateAmbiente(ambienteId, ambiente);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Subambiente removido com sucesso");
+            response.put("ambiente", ambienteAtualizado);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Erro interno do servidor");
+            error.put("message", e.getMessage());
+            return ResponseEntity.internalServerError().body(error);
+        }
+    }
 }

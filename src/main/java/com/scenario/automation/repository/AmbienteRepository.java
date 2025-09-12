@@ -46,4 +46,20 @@ public interface AmbienteRepository extends JpaRepository<Ambiente, Long> {
      */
     @Query("SELECT DISTINCT a FROM Ambiente a LEFT JOIN FETCH a.luminarias")
     List<Ambiente> findAllWithLuminarias();
+
+    /**
+     * Buscar ambientes por subambiente
+     */
+    List<Ambiente> findBySubambienteIgnoreCase(String subambiente);
+
+    /**
+     * Buscar todos os subambientes únicos (não nulos)
+     */
+    @Query("SELECT DISTINCT a.subambiente FROM Ambiente a WHERE a.subambiente IS NOT NULL ORDER BY a.subambiente")
+    List<String> findAllDistinctSubambientes();
+
+    /**
+     * Verificar se existe ambiente com o subambiente
+     */
+    boolean existsBySubambienteIgnoreCase(String subambiente);
 }

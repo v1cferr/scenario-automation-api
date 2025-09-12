@@ -138,4 +138,28 @@ public class AmbienteService {
     public List<Ambiente> findAllWithLuminarias() {
         return ambienteRepository.findAllWithLuminarias();
     }
+
+    /**
+     * Buscar ambientes por subambiente
+     */
+    @Transactional(readOnly = true)
+    public List<Ambiente> findBySubambiente(String subambiente) {
+        return ambienteRepository.findBySubambienteIgnoreCase(subambiente);
+    }
+
+    /**
+     * Buscar todos os subambientes únicos
+     */
+    @Transactional(readOnly = true)
+    public List<String> findAllDistinctSubambientes() {
+        return ambienteRepository.findAllDistinctSubambientes();
+    }
+
+    /**
+     * Verificar se existe ambiente com o subambiente
+     */
+    @Transactional(readOnly = true)
+    public boolean existsBySubambiente(String subambiente) {
+        return ambienteRepository.existsBySubambienteIgnoreCase(subambiente);
+    }
 }
